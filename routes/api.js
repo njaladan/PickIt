@@ -6,12 +6,26 @@ const Image = require('../models/image');
 const router = express.Router();
 
 router.post("/newuser",(req,res) => {
-  let username = req.body.username;
-  let newUser = new User({
-    'username': username,
-  });
-  newUser.save();
-  res.send('User ' + username + ' has been added.'); 
+  console.log("new user request received");
+  console.log(req.body);
+  const username = req.body.username;
+  const password = req.body.password;
+  const passwordConf = req.body.passwordConf;
+  if (password !== passwordConf) {
+    res.status(400).send("Passwords do not match");
+  } else {
+    const newUser = new User({
+      'username': username,
+      'password': password
+    });
+    newUser.save((err, user) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send('User ' + username + ' has been added.'); 
+      }
+    });
+  }
 });
 
 router.post("/newpic",(req,res,next)=>{

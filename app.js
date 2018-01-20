@@ -14,6 +14,7 @@ const app = express();
 
 // Middleware/Authentication
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // Set Views
 app.use('/', views);

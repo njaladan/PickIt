@@ -6,4 +6,4 @@ const imageSchema = new mongoose.Schema({
   ownerId: String 
 });
 
-module.exports = mongoose.model('ImageModel', imageSchema);
+module.exports = mongoose.model('Image', imageSchema);

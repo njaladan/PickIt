@@ -14,4 +14,8 @@ router.get('/', (req, res) => {
   res.render('index', {images: allpics});
 });
 
+router.get('/signup', (req, res) => {
+  res.render('signup');
+});
+
 module.exports = router;

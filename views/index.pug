@@ -1,20 +1,16 @@
+extends base
+
 mixin imageCard(imgSrc, title)
         div.card(style="width: 20vw;")
                 img.card-image-top(src=imgSrc)
                 div.card-body
                         h5.card-title= title
 
-doctype html
-html(lang="en")
-        head
-                title PickIt!
+block title
+        title Pickit!
 
-                link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm", crossorigin="anonymous")
-                link(rel="stylesheet", href="static/stylesheets/style.css")
+block content
+        a(href="/signup") Sign up
 
-                script(src="static/js/api.js")
-
-        body
-
-                for image in images
-                        +imageCard(image.imgSrc, image.title)
+        for image in images
+                +imageCard(image.imgSrc, image.title)
