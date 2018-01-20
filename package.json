@@ -1,0 +1,24 @@
+{
+  "name": "pickit",
+  "version": "1.0.0",
+  "description": "We are making a bookmarker but betterer at bookermarking. Er.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njaladan/PennApps18.git"
+  },
+  "author": "Sambhav :)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/njaladan/PennApps18/issues"
+  },
+  "homepage": "https://github.com/njaladan/PennApps18#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "mongoose": "^5.0.1"
+  }
+}
