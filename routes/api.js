@@ -1,10 +1,25 @@
+///////Requirements & Configuration/////////
 const express = require('express');
 
 const User = require('../models/user');
 const Image = require('../models/image');
 
 const router = express.Router();
+require('dotenv').load();
 
+//AWS Start
+const bodyParser = require('body-parser')
+const base64Img = require('base64-img');
+const fs = require('fs');
+const AWS = require('aws-sdk');
+AWS.config.update({
+        accessKeyId: process.env.AWS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_KEY
+});
+//AWS End
+///////////////////////////////////////////
+
+//Routes
 router.post("/newuser",(req,res) => {
   console.log("new user request received");
   console.log(req.body);
@@ -28,7 +43,7 @@ router.post("/newuser",(req,res) => {
   }
 });
 
-router.post("/newpic",(req,res,next)=>{
+router.post("/newpic",(req,res,next) => {
   let awsKey = req.body.awsKey;
   let title = req.body.title;
   let username = req.body.username;
@@ -61,6 +76,46 @@ router.get("/allpics",(req,res) => {
         }, error => {console.log(error)});
     },
     error => {console.log(error)});
+});
+
+router.post("/s3upload",(req,res,next) => {
+    function dataUrlToBucket(url, name){
+        let filePath = base64Img.imgSync(url,'',name);
+        fs.readFile(filePath, (err, data) =>{
+            //Put object in bucket
+            let s3 = new AWS.S3();
+            let params = {
+                Bucket: 'pickitdata',
+                Key: name,
+                ContentType: 'image/jpeg',
+                Body: data
+            };
+            s3.putObject(params, (err, res) => {
+                if (err) {
+                    console.log("Error");
+                } else {
+                    console.log("Success");
+                }
+            });
+        fs.unlink(filePath, ()=>{console.log('Image removed from local.')})
+        });
+    };
+    //Create file name
+    let uniqueNumber = req.body.uniqueNumber;
+    let username = req.body.username;
+    let fileName = username+uniqueNumber;
+    //Create image from dataUrl
+    let imgUrl = req.body.imgUrl;
+    if ('http' === imgUrl.substring(0,4)){
+        base64Img.requestBase64(imgUrl,(err,res,body)=>
+        {   
+            dataUrlToBucket(body, fileName);
+        });     
+    }
+    else{
+        dataUrlToBucket(imgUrl, fileName);
+    }
+    res.send("Completed")
 });
 
 module.exports = router;
