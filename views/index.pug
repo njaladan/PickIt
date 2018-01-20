@@ -10,7 +10,13 @@ block title
         title Pickit!
 
 block content
-        a(href="/signup") Sign up
+        if loggedIn
+                a(href="/logout") Log Out
+                for image in images
+                        +imageCard(image.imgSrc, image.title)
+        else
+                a(href="/signup") Sign up
+                br
+                a(href="/login") Log In
 
-        for image in images
-                +imageCard(image.imgSrc, image.title)
+        
