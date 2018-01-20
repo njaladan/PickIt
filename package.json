@@ -19,6 +19,7 @@
   "homepage": "https://github.com/njaladan/PennApps18#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "mongoose": "^5.0.1"
+    "mongoose": "^5.0.1",
+    "pug": "^2.0.0-rc.4"
   }
 }
