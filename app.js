@@ -1,14 +1,16 @@
 //Stuffs by Sambhav
-const express = require("express");
-const bodyParser = require('body-parser')
+const express = require('express');
+const bodyParser = require('body-parser');
+require('dotenv').load();
+
 const app = express();
 app.use(bodyParser.json())
 
 /////Mongo////////
 //Mongo Setup
-const mongoose = require('mongoose')
-const mongoURL = 'mongodb://dadmin:blueisfour@ds263707.mlab.com:63707/pickit';
-mongoose.connect(mongoURL)
+const mongoose = require('mongoose');
+const mongoURL = process.env.DB_URI;
+mongoose.connect(mongoURL);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 // db error handling
@@ -32,7 +34,7 @@ app.post("/newuser",(req,res) => {
 		'username': username,
 	});
 	newUser.save();
-	res.send('User ' + username + ' has been added.') 
+        res.send('User ' + username + ' has been added.'); 
 });
 app.post("/newpic",(req,res,next)=>{
 	let awsKey = req.body.awsKey;
@@ -50,7 +52,8 @@ app.post("/newpic",(req,res,next)=>{
 		newPic.save();
 		res.send("New picture, entitled '" + title + "' has been saved."); 
 	},
-	error => {console.log(error);})
+	        error => {console.log(error);
+                         });
 });
 app.get("/allpics",(req,res) => {
 	let username = req.query.username;
@@ -62,8 +65,10 @@ app.get("/allpics",(req,res) => {
 				let imageKeys = [];
 				images.forEach(image => imageKeys.push(image.awsKey));
 				res.send(imageKeys);
-				}, error => {console.log(error)})
+			}, error => {console.log(error)});
 		},
 		error => {console.log(error)});
 });
-app.listen(3040);
+
+
+app.listen(process.env.PORT);
