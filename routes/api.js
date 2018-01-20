@@ -20,6 +20,7 @@ AWS.config.update({
 ///////////////////////////////////////////
 
 //Routes
+//POST Request. Fields: username, password, passwordConf
 router.post("/newuser",(req,res) => {
   console.log("new user request received");
   console.log(req.body);
@@ -43,6 +44,7 @@ router.post("/newuser",(req,res) => {
   }
 });
 
+//POST Request. Fields: awsKey, title, username
 router.post("/newpic",(req,res,next) => {
   let awsKey = req.body.awsKey;
   let title = req.body.title;
@@ -63,6 +65,7 @@ router.post("/newpic",(req,res,next) => {
   );
 });
 
+//GET Request. Fields: username
 router.get("/allpics",(req,res) => {
   let username = req.query.username;
   User.findOne({'username':username}).then(
@@ -78,6 +81,7 @@ router.get("/allpics",(req,res) => {
     error => {console.log(error)});
 });
 
+//POST Request. Fields: uniqueNumber, username, imgUrl
 router.post("/s3upload",(req,res,next) => {
     function dataUrlToBucket(url, name){
         let filePath = base64Img.imgSync(url,'',name);
