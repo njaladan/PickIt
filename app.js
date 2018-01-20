@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 require('dotenv').load();
 
 const app = express();
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 /////Mongo////////
 //Mongo Setup
@@ -28,7 +28,17 @@ const imgColl = mongoose.model('ImageModel',imageSchema);
 const userColl = mongoose.model('UserModel',userSchema);
 /////////////////
 
-app.post("/newuser",(req,res) => {
+// View Endpoints
+app.set('views', './views');
+app.set('view engine', 'pug');
+app.use('/static', express.static('public'));
+
+app.get('/', (req, res) => {
+        res.render('index', {});
+});
+
+// API Endpoints
+app.post("/api/newuser",(req,res) => {
 	let username = req.body.username;
 	let newUser = new userColl({
 		'username': username,
@@ -36,7 +46,7 @@ app.post("/newuser",(req,res) => {
 	newUser.save();
         res.send('User ' + username + ' has been added.'); 
 });
-app.post("/newpic",(req,res,next)=>{
+app.post("/api/newpic",(req,res,next)=>{
 	let awsKey = req.body.awsKey;
 	let title = req.body.title;
 	let username = req.body.username;
@@ -55,7 +65,7 @@ app.post("/newpic",(req,res,next)=>{
 	        error => {console.log(error);
                          });
 });
-app.get("/allpics",(req,res) => {
+app.get("/api/allpics",(req,res) => {
 	let username = req.query.username;
 	userColl.findOne({'username':username}).then(
 		user => {
@@ -72,3 +82,4 @@ app.get("/allpics",(req,res) => {
 
 
 app.listen(process.env.PORT);
+console.log('Server running on port ' + process.env.PORT);
