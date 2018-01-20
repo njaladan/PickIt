@@ -1,14 +1,16 @@
 //Stuffs by Sambhav
-const express = require("express");
-const bodyParser = require('body-parser')
+const express = require('express');
+const bodyParser = require('body-parser');
+require('dotenv').load();
+
 const app = express();
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 /////Mongo////////
 //Mongo Setup
-const mongoose = require('mongoose')
-const mongoURL = 'mongodb://dadmin:blueisfour@ds263707.mlab.com:63707/pickit';
-mongoose.connect(mongoURL)
+const mongoose = require('mongoose');
+const mongoURL = process.env.DB_URI;
+mongoose.connect(mongoURL);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 // db error handling
@@ -26,15 +28,25 @@ const imgColl = mongoose.model('ImageModel',imageSchema);
 const userColl = mongoose.model('UserModel',userSchema);
 /////////////////
 
-app.post("/newuser",(req,res) => {
+// View Endpoints
+app.set('views', './views');
+app.set('view engine', 'pug');
+app.use('/static', express.static('public'));
+
+app.get('/', (req, res) => {
+        res.render('index', {});
+});
+
+// API Endpoints
+app.post("/api/newuser",(req,res) => {
 	let username = req.body.username;
 	let newUser = new userColl({
 		'username': username,
 	});
 	newUser.save();
-	res.send('User ' + username + ' has been added.') 
+        res.send('User ' + username + ' has been added.'); 
 });
-app.post("/newpic",(req,res,next)=>{
+app.post("/api/newpic",(req,res,next)=>{
 	let awsKey = req.body.awsKey;
 	let title = req.body.title;
 	let username = req.body.username;
@@ -50,9 +62,10 @@ app.post("/newpic",(req,res,next)=>{
 		newPic.save();
 		res.send("New picture, entitled '" + title + "' has been saved."); 
 	},
-	error => {console.log(error);})
+	        error => {console.log(error);
+                         });
 });
-app.get("/allpics",(req,res) => {
+app.get("/api/allpics",(req,res) => {
 	let username = req.query.username;
 	userColl.findOne({'username':username}).then(
 		user => {
@@ -62,8 +75,11 @@ app.get("/allpics",(req,res) => {
 				let imageKeys = [];
 				images.forEach(image => imageKeys.push(image.awsKey));
 				res.send(imageKeys);
-				}, error => {console.log(error)})
+			}, error => {console.log(error)});
 		},
 		error => {console.log(error)});
 });
-app.listen(3040);
+
+
+app.listen(process.env.PORT);
+console.log('Server running on port ' + process.env.PORT);
