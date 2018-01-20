@@ -1,6 +1,8 @@
 // Libraries
 const express = require('express');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 // Local Dependencies
 const db = require('./db');
@@ -11,6 +13,16 @@ require('dotenv').load();
 
 // Initialize App
 const app = express();
+
+// Use sessions for tracking logins
+app.use(session({
+  secret: 'pickit',
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({
+    mongooseConnection: db
+  })
+}));
 
 // Middleware/Authentication
 app.use(bodyParser.json());
