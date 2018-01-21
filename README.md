@@ -1,4 +1,4 @@
-# PickIt
+# PickIt 🖼
 
 PickIt is a full-fledged Chrome extension, API, and web app that lets you save and tag images, designed and coded in a 36 hour span at PennApps XVII. Think bookmarks, but perfected.
 
@@ -37,7 +37,7 @@ Coordination between teams is difficult, and this was our first time trying to w
 
 Most of the technologies we used were new to us, and we had to read through lots of documentation to see how they worked. Lots of these technologies also involved difficult new concepts, such as image parsing and asynchronous function calls.
 
-Also, apparently certain Chrome extensions portions don't log to the console. We learned how to debug with alerts instead.
+Also, apparently certain Chrome-extension JavaScript files don't log to the console. We learned how to debug with alerts instead.
 
 ## Future Ideas
 
@@ -45,6 +45,7 @@ Also, apparently certain Chrome extensions portions don't log to the console. We
  * Chrome extension has more features
  * "Create a big picture with all the small pictures" -Sambhav
  * Update front-end to have a more aesthetic interface
+ * Create permalinks to share with friends and set permissions
 
 ## Licensing
 
