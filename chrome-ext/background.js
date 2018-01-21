@@ -11,13 +11,15 @@ chrome.contextMenus.onClicked.addListener(onClickHandler);
 // The onClicked callback function.
 function onClickHandler(info, tab) {
   var imgsrc = info.srcUrl;
+  var websrc = info.pageUrl;
+
+  console.log(imgtitle);
 
   chrome.storage.local.get('userId', function(items){
     var userId = items.userId;
     if (userId) {
       $.post("http://localhost:3000/api/newpic", {
           'awsKey':imgsrc,
-          'title':'hardcoded title lmao',
           'userId': userId,
           'tags':[]
         },
@@ -27,6 +29,6 @@ function onClickHandler(info, tab) {
     } else {
       console.log('bad id');
     }
-  })
+  });
 
 };

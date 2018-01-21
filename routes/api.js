@@ -14,8 +14,8 @@ const base64Img = require('base64-img');
 const fs = require('fs');
 const AWS = require('aws-sdk');
 AWS.config.update({
-        accessKeyId: process.env.AWS_KEY,
-        secretAccessKey: process.env.AWS_SECRET_KEY
+  accessKeyId: process.env.AWS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY
 });
 //AWS End
 ///////////////////////////////////////////
@@ -68,9 +68,11 @@ router.get("/login", (req, res) => {
 router.get("/login/ext", (req, res) => {
   const username = req.query.username;
   const password = req.query.password;
+  console.log(username + ' ' + password);
   User.findOne({'username': username}, (err, user) => {
     if (err) throw err;
     if (user) {
+      console.log('user found');
       user.comparePassword(password, (err, correct) => {
         if (err) throw err;
         if (correct) {
@@ -82,7 +84,7 @@ router.get("/login/ext", (req, res) => {
     } else {
       res.send();
     }
-    });
+  });
 });
 
 
@@ -90,7 +92,6 @@ router.get("/login/ext", (req, res) => {
 //POST Request. Fields: awsKey, title, username, tags
 router.post("/newpic",(req,res) => {
   const awsKey = req.body.awsKey;
-  const title = req.body.title;
   const tags = req.body.tags;
   const userId = req.body.userId;
   User.findOne({'_id':userId}).then(
@@ -98,7 +99,6 @@ router.post("/newpic",(req,res) => {
       const ownerId = user._id;
       const newPic = new Image({
         'awsKey': awsKey,
-        'title': title,
         'tags': tags,
         'ownerId': ownerId
       });
@@ -109,7 +109,7 @@ router.post("/newpic",(req,res) => {
           tagObj.save();
         });
       });
-      res.send("New picture, entitled '" + title + "' has been saved.");
+      res.send("New picture has been saved.");
     },
     error => {console.log(error);}
   );
@@ -120,24 +120,24 @@ router.post("/newtag",(req,res) => {
   const tag = req.body.tag;
   const username = req.body.username;
   User.findOne({'username':username}).then(user=> {
-      const userId = user._id;
-      console.log(user);
-      Tag.find({'tag':tag,'ownerId':userId}).then(tagList => {
-        if(tagList.length === 0){
-          const newTag = new Tag({
-            "tag": tag,
-            "pic_IDs": [],
-            "ownerId": userId
-          });
-          newTag.save();
-          res.send("New tag made");
-        }
-        else{
-          res.send("Tag exists");
-        }
-      });
+    const userId = user._id;
+    console.log(user);
+    Tag.find({'tag':tag,'ownerId':userId}).then(tagList => {
+      if(tagList.length === 0){
+        const newTag = new Tag({
+          "tag": tag,
+          "pic_IDs": [],
+          "ownerId": userId
+        });
+        newTag.save();
+        res.send("New tag made");
+      }
+      else{
+        res.send("Tag exists");
+      }
     });
-    });
+  });
+});
 
 //GET Request. Fields: username
 router.get("/allpics",(req,res) => {
@@ -162,64 +162,64 @@ router.get("/taggedpics",(req,res) => {
   const taggedPicKeys = []
   User.findOne({'username': username}).then( user => {
     console.log(user._id,tag);
-  Tag.findOne({'tag':tag, 'ownerId':user._id}).then(tagObj => {
-    Image.find({_id: {$in: tagObj.picIDs}}).then(images => {
-      images.forEach(image => {
-        taggedPicKeys.push(image.awsKey);
-        console.log(taggedPicKeys);
+    Tag.findOne({'tag':tag, 'ownerId':user._id}).then(tagObj => {
+      Image.find({_id: {$in: tagObj.picIDs}}).then(images => {
+        images.forEach(image => {
+          taggedPicKeys.push(image.awsKey);
+          console.log(taggedPicKeys);
+        });
+      }).then(()=>{
+        res.send(taggedPicKeys);
       });
-    }).then(()=>{
-    res.send(taggedPicKeys);
+    });
   });
-  });
-});
 });
 
 //POST Request. Fields: uniqueNumber, username, imgUrl
 router.post("/s3upload",(req,res) => {
-    function base64_encode(file) {
-      let bitmap = fs.readFileSync(file);
-      return new Buffer(bitmap).toString('base64');
-    }
-    function dataUrlToBucket(url, name){
-        console.log("A");
-        console.log(url);
-        const filePath = base64Img.imgSync(url,'',name);
-        fs.readFile(filePath, (err, data) =>{
-            //Put object in bucket
-            let s3 = new AWS.S3();
-            let params = {
-                Bucket: 'pickitdata',
-                Key: name,
-                ContentType: 'image/jpeg',
-                Body: data
-            };
-            s3.putObject(params, (err, res) => {
-                if (err) {
-                    console.log("Error");
-                } else {
-                    console.log("Success");
-                }
-            });
-        fs.unlink(filePath, ()=>{console.log('Image removed from local.')})
-        });
-    };
-    //Create file name
-    let uniqueNumber = req.body.uniqueNumber;
-    let username = req.body.username;
-    let fileName = username+uniqueNumber;
-    //Create image from dataUrl
-    let imgUrl = req.body.imgUrl;
-    if ('http' === imgUrl.substring(0,4)){
-        base64Img.requestBase64(imgUrl,(err,res,body)=>
-        {
-            dataUrlToBucket(body, fileName);
-        });
-    }
-    else{
-        dataUrlToBucket(imgUrl, fileName);
-    }
-    res.send("Completed")
+  function base64_encode(file) {
+    let bitmap = fs.readFileSync(file);
+    return new Buffer(bitmap).toString('base64');
+  }
+  function dataUrlToBucket(url, name){
+    console.log("A");
+    console.log(url);
+    const filePath = base64Img.imgSync(url,'',name);
+    fs.readFile(filePath, (err, data) =>{
+      //Put object in bucket
+      let s3 = new AWS.S3();
+      let params = {
+        Bucket: 'pickitdata',
+        Key: name,
+        ContentType: 'image/jpeg',
+        Body: data
+      };
+      s3.putObject(params, (err, res) => {
+        if (err) {
+          console.log("Error");
+        } else {
+          console.log("Success");
+        }
+      });
+      fs.unlink(filePath, ()=>{console.log('Image removed from local.')})
+    });
+  };
+  //Create file name
+  let uniqueNumber = req.body.uniqueNumber;
+  let username = req.body.username;
+  let fileName = username+uniqueNumber;
+  //Create image from dataUrl
+  let imgUrl = req.body.imgUrl;
+  if ('http' === imgUrl.substring(0,4)){
+    base64Img.requestBase64(imgUrl,(err,res,body)=>
+                            {
+                              dataUrlToBucket(body, fileName);
+                            });
+  }
+  else{
+    dataUrlToBucket(imgUrl, fileName);
+  }
+  res.send("Completed")
 });
 
 module.exports = router;
