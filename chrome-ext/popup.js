@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
     $.get('http://localhost:3000/api/login/ext', {'username':user, 'password':pass}, (data) => {
       $('#message').show();
       if (data) {
-        userId = data;
         chrome.storage.local.set({'userId':data});
         $('#message').text("Logged in as " + user);
         $('#inputForm').hide();

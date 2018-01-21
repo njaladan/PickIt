@@ -94,9 +94,11 @@ router.post("/newpic",(req,res) => {
   const awsKey = req.body.awsKey;
   const tags = req.body.tags;
   const userId = req.body.userId;
+  console.log(userId);
   User.findOne({'_id':userId}).then(
     user => {
       const ownerId = user._id;
+      console.log(ownerId);
       const newPic = new Image({
         'awsKey': awsKey,
         'tags': tags,
