@@ -2,11 +2,11 @@ let user;
 let pass;
 
 document.addEventListener('DOMContentLoaded', function() {
-  chrome.storage.local.get('userId', function(items) {
-    var userId = items.userId;
-    if (userId) {
+  chrome.storage.local.get('username', function(items) {
+    var username = items.username;
+    if (username) {
       $('#message').show();
-      $('#message').text("Logged in");
+      $('#message').text("Logged in as " + username);
       $('#inputForm').hide();
       $('#logout').show();
     } else {
@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
       $('#message').show();
       if (data) {
         chrome.storage.local.set({'userId':data});
+        chrome.storage.local.set({'username': user});
         $('#message').text("Logged in as " + user);
         $('#inputForm').hide();
         $('#logout').show();
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   $('#logout').click(function() {
     chrome.storage.local.set({'userId': ''});
+    chrome.storage.local.set({'username': ''});
     $('#message').hide();
     $('#inputForm').show();
     $('#logout').hide();

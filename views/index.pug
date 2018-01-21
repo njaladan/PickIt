@@ -1,22 +1,48 @@
 extends base
 
-mixin imageCard(imgSrc)
-        div.card
+mixin imageCard(imgSrc, tags, imgId)
+        div.card.m-3.d-inline-block
                 img.card-image-top(src=imgSrc)
                 div.card-body
-                        h5.card-title Image
+                        h5.card-title #[a(href= imgSrc) Source] 
+                        p.card-text Tags: #{tags.join(', ')}
+                        div.input-group.mb-3
+                                input.form-control(id=imgId, type="text")
+                                div.input-group-append
+                                        button.btn.btn-outline-secondary.tagBtn(type="button") Add Tag
+                                        button.btn.btn-outline-secondary.delBtn(type="button") Delete Tags
 
 block title
         title Pickit!
 
 block content
+        +navBar(loggedIn)
         if loggedIn
-                a(href="/logout") Log Out
-                for image in images
-                        +imageCard(image.awsKey)
+                div.input-group.m-3
+                        input.form-control(id="searchBar", type="text")
+                        div.input-group-append
+                                button.btn.btn-outline-primary#searchBtn(type="button") Search By Tag
+                                button.btn.btn-outline-primary#clearBtn(type="button") Clear Tags
+                if typeof(tags) !== 'undefined'
+                        p Tags: #{tags.join(', ')}
+                div.container
+                        for image in images
+                                +imageCard(image.awsKey, image.tags, image._id)
         else
-                a(href="/signup") Sign up
-                br
-                a(href="/login") Log In
+                h1 What is PickIt?
+                p 
+                        | PickIt is essentially a bookmark for images. If you see an image you like
+                        | on the web, simply use our Chrome extension to save it to your account.
+                        | Then, visit our web app to view the images you've saved, and even filter them
+                        | to your tastes!
+                h1 Who is PickIt?
+                p
+                        | PickIt was created at PennApps XVIII by Anton, Ganesh, Kevin, and Samhbhav.
+                h1 Where is PickIt?
+                p
+                        | In the future, we hope to expand the functionality of PickIt by adding 
+                        | automated tagging and more advanced search options.
 
-        
+
+
+

@@ -1,4 +1,22 @@
 doctype html
+
+mixin navElem(text, url)
+        li.nav-item
+                a.nav-link(href=url) #{text}
+
+mixin navBar(loggedIn)
+        nav.navbar.navbar-expand-lg.fixed-top.navbar-dark.bg-primary
+                a.navbar-brand(href='/') PickIt
+                div.collapse.navbar-collapse
+                        ul.navbar-nav.mr-auto
+                                if loggedIn
+                                        +navElem("Hello " + username + "!", "/")
+                                        +navElem("Log Out", "/logout")
+                                else
+                                        +navElem("Sign Up", "/signup")
+                                        +navElem("Log In", "/login")
+
+
 html(lang="en")
         head
                 block title
@@ -6,7 +24,8 @@ html(lang="en")
                 link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm", crossorigin="anonymous")
                 link(rel="stylesheet", href="static/stylesheets/style.css")
 
-                script(src="static/js/api.js")
+                script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+                script(src="static/js/main.js")
 
         body
                 div.container

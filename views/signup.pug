@@ -3,16 +3,24 @@ extends base
 block title
         title PickIt Sign Up
 
+block title
+        title Sign Up for PickIt
+
 block content
+        +navBar(False)
+
+        if errorMsg
+                h6.error-msg #{errorMsg}
+
         form(method="POST", action="api/newuser")
                 div.form-group
                         label(for="username") Username:
                         input#username.form-control(type="text", placeholder="username", name="username")
                 div.form-group
                         label(for="password") Password
-                        input#password.form-control(type="text", placeholder="password", name="password")
+                        input#password.form-control(type="password", placeholder="password", name="password")
                 div.form-group
                         label(for="passwordConf") Confirm Password:
-                        input#passwordConf.form-control(type="text", placeholder="confirm password", name="passwordConf")
+                        input#passwordConf.form-control(type="password", placeholder="confirm password", name="passwordConf")
                 button.btn.btn-primary(type="submit") Sign up
 

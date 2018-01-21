@@ -6,31 +6,55 @@ const Image = require('../models/image');
 
 router.get('/', (req, res) => {
   const userId = req.session.userId;
-  console.log(userId);
+  const tags = req.session.tags;
+  let username = '';
 
-  Image.find({'ownerId': userId}).then((images) => {
-    console.log(images);
-    
-    let loggedIn = false;
-    if (req.session.userId) {
-      loggedIn = true;
-    }
-    
-    res.render('index', {images: images, loggedIn: loggedIn});
+  User.findOne({'_id': userId}).then(user => {
+    if (user) username = user.username;
   });
+
+  if (!tags || tags.length == 0) {
+    Image.find({'ownerId': userId}).then(images => {
+      
+      let loggedIn = false;
+      if (req.session.userId) {
+        loggedIn = true;
+      }
+      
+      res.render('index', {images: images, loggedIn: loggedIn, username: username});
+    });
+  } else {
+    Image.find({'ownerId': userId}).then(images => {
+      const matchingImages = images.filter(image => tags.some( tag => image.tags.includes(tag)));
+      
+      let loggedIn = false;
+      if (req.session.userId) {
+        loggedIn = true;
+      }
+      res.render('index', {images: matchingImages, loggedIn: loggedIn, username: username, tags: tags});
+    });
+  }
 });
 
 router.get('/signup', (req, res) => {
-  res.render('signup');
+  let errorMsg = "";
+  if (req.session.error && req.session.error.length > 0) {
+    errorMsg = req.session.error;
+  }
+  res.render('signup', {errorMsg: errorMsg});
 });
 
 router.get('/login', (req, res) => {
-  res.render('login');
+  let errorMsg = "";
+  if (req.session.error && req.session.error.length > 0) {
+    errorMsg = req.session.error;
+  }
+  res.render('login', {errorMsg: errorMsg});
 });
 
 router.get('/logout', function (req, res) {
-  console.log('logging out');
   req.session.userId = '';
+  req.session.tags = [];
   res.redirect('/');
 });
 

@@ -27,7 +27,9 @@ router.post("/newuser",(req,res) => {
   const password = req.body.password;
   const passwordConf = req.body.passwordConf;
   if (password !== passwordConf) {
-    res.status(400).send("Passwords do not match");
+    req.session.error = "Passwords do not match.";
+    res.redirect('/signup');
+    //res.status(400).send("Passwords do not match.");
   } else {
     const newUser = new User({
       'username': username,
@@ -35,9 +37,11 @@ router.post("/newuser",(req,res) => {
     });
     newUser.save((err, user) => {
       if (err) {
-        res.send(err);
+        req.session.error = "Username already taken.";
+        res.redirect('/signup');
       } else {
         req.session.userId = user._id;
+        req.session.error = "";
         res.redirect('/');
       }
     });
@@ -49,18 +53,26 @@ router.get("/login", (req, res) => {
   const username = req.query.username;
   const password = req.query.password;
   User.findOne({'username': username}, (err, user) => {
-    if (err) throw err;
-    user.comparePassword(password, (err, correct) => {
-      if (err) throw err;
-      if (correct) {
-        req.session.userId = user._id;
-        res.redirect('/');
-      } else {
-        const error = new Error('Wrong username or password.');
-        error.status = 401;
-        res.send(error);
-      }
-    });
+    if (err) {
+      req.session.error = "Wrong username or password";
+      res.redirect('/login');
+    }
+    if (user) {
+      user.comparePassword(password, (err, correct) => {
+        if (err) throw err;
+        if (correct) {
+          req.session.userId = user._id;
+          req.session.error = "";
+          res.redirect('/');
+        } else {
+          req.session.error = "Wrong username or password";
+          res.redirect('/login');
+        }
+      });
+    } else {
+      req.session.error = "Wrong username or password";
+      res.redirect('/login');
+    }
   });
 });
 
@@ -115,6 +127,52 @@ router.post("/newpic",(req,res) => {
     },
     error => {console.log(error);}
   );
+});
+
+// fields: imageId, tag
+router.post("/addtag", (req, res) => {
+  console.log('new tag');
+  const tag = req.body.tag;
+  const imageId = req.body.imageId;
+  Image.findOne({'_id': imageId}).then(image => {
+    let newTags = image.tags;
+    if (!newTags.includes(tag)) {
+      newTags.push(tag);
+    }
+    image.set({tags: newTags});
+    image.save((err, newImage) => {
+      if (err) console.log(err);
+      res.send(newImage);
+    });
+  });
+});
+
+// fields: imageId
+router.post("/deltags", (req, res) => {
+  const imageId = req.body.imageId;
+  Image.findOne({'_id': imageId}).then(image => {
+    image.set({tags: []});
+    image.save((err, newImage) => {
+      if (err) console.log(err);
+      res.send(newImage);
+    });
+  });
+});
+
+// fields: tag
+router.post("/searchtag", (req, res) => {
+  if (!req.session.tags) {
+    req.session.tags = [];
+  }
+  req.session.tags.push(req.body.tag);
+  res.send();
+});
+
+// fields: none
+router.post("/cleartags", (req, res) => {
+  console.log("clearing tags");
+  req.session.tags = [];
+  res.send();
 });
 
 //POST Request. Fields: username, tag
