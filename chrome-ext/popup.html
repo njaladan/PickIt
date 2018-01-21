@@ -29,21 +29,22 @@
   </head>
 
   <body>
-    <h1>PickIt Login</h1>
+    <h1 id = 'error'>PickIt Login</h1>
     <form>
       <div class="form-group">
         <label for="exampleInputEmail1">Email address</label>
-        <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+        <input type="text" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email">
         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
       </div>
       <div class="form-group">
         <label for="exampleInputPassword1">Password</label>
         <input type="password" class="form-control" id="inputPassword" placeholder="Password">
       </div>
-      <button type="submit" class="btn btn-primary" id="submitAnswers">Submit</button>
+      <button type="button" class="btn btn-primary" id="submitAnswers">Submit</button>
     </form>
     <script src="jquery-2.2.4.min.js"></script>
     <script src="popup.js"></script>
     <script src="vendor/bootstrap.min.js"></script>
+    <script src="background.js"></script>
   </body>
 </html>

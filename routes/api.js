@@ -37,7 +37,6 @@ router.post("/newuser",(req,res) => {
       if (err) {
         res.send(err);
       } else {
-        //res.send('User ' + username + ' has been added.');
         req.session.userId = user._id;
         res.redirect('/');
       }
@@ -71,16 +70,21 @@ router.get("/login/ext", (req, res) => {
   const password = req.query.password;
   User.findOne({'username': username}, (err, user) => {
     if (err) throw err;
-    user.comparePassword(password, (err, correct) => {
-      if (err) throw err;
-      if (correct) {
-        res.send(user._id);
-      } else {
-        res.send(None);
-      }
+    if (user) {
+      user.comparePassword(password, (err, correct) => {
+        if (err) throw err;
+        if (correct) {
+          res.send(user._id);
+        } else {
+          res.send();
+        }
+      });
+    } else {
+      res.send();
+    }
     });
-  }); 
 });
+
 
 
 //POST Request. Fields: awsKey, title, username, tags
@@ -88,8 +92,8 @@ router.post("/newpic",(req,res) => {
   const awsKey = req.body.awsKey;
   const title = req.body.title;
   const tags = req.body.tags;
-  const username = req.body.username;
-  User.findOne({'username':username}).then(
+  const userId = req.body.userId;
+  User.findOne({'_id':userId}).then(
     user => {
       const ownerId = user._id;
       const newPic = new Image({
@@ -105,7 +109,7 @@ router.post("/newpic",(req,res) => {
           tagObj.save();
         });
       });
-      res.send("New picture, entitled '" + title + "' has been saved."); 
+      res.send("New picture, entitled '" + title + "' has been saved.");
     },
     error => {console.log(error);}
   );
@@ -131,7 +135,7 @@ router.post("/newtag",(req,res) => {
         else{
           res.send("Tag exists");
         }
-      });  
+      });
     });
     });
 
@@ -142,7 +146,7 @@ router.get("/allpics",(req,res) => {
     user => {
       const userId = user._id;
       Image.find({'ownerId':userId}).then(
-        images => { 
+        images => {
           const imageKeys = [];
           images.forEach(image => imageKeys.push(image.awsKey));
           res.send(imageKeys);
@@ -208,9 +212,9 @@ router.post("/s3upload",(req,res) => {
     let imgUrl = req.body.imgUrl;
     if ('http' === imgUrl.substring(0,4)){
         base64Img.requestBase64(imgUrl,(err,res,body)=>
-        {   
+        {
             dataUrlToBucket(body, fileName);
-        });     
+        });
     }
     else{
         dataUrlToBucket(imgUrl, fileName);
