@@ -4,13 +4,11 @@ var user;
 var pass;
 
 document.addEventListener('DOMContentLoaded', function() {
-    var link = document.getElementById('submit_button');
+    var link = document.getElementById('submitAnswers');
     // onClick's logic below:
-    console.log(link);
     link.addEventListener('click', function() {
-      user = document.getElementById('user').value;
-      pass = document.getElementById('pass').value;
-      document.getElementById('invisible').innerHTML = user;
+      user = document.getElementById('inputEmail').value;
+      pass = document.getElementById('inputPassword').value;
       alert(user+pass);
     });
 });

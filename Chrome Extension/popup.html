@@ -11,6 +11,8 @@
       body {
         margin: 10px;
         white-space: nowrap;
+        padding: 30px;
+        background-color:red;
       }
 
       h1 {
@@ -23,21 +25,25 @@
         justify-content: space-between;
       }
     </style>
-
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap.min.css">
   </head>
 
   <body>
-    <h1>Bookmarks 2.0</h1>
-    <div id="container">
-      <form id="login_screen">
-          username: <input id="user" type="text"><br>
-          password: <input id="pass" type="password"><br>
-          <button id="submit_button" type=button>submit</button>
-      </form>
-      <br/>
-    </div>
-    <p id="invisible">sdf</p>
+    <h1>PickIt Login</h1>
+    <form>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Email address</label>
+        <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Password</label>
+        <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+      </div>
+      <button type="submit" class="btn btn-primary" id="submitAnswers">Submit</button>
+    </form>
     <script src="jquery-2.2.4.min.js"></script>
     <script src="popup.js"></script>
+    <script src="vendor/bootstrap.min.js"></script>
   </body>
 </html>
