@@ -24,24 +24,20 @@
       }
     </style>
 
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-    -->
-    <script src="popup.js"></script>
-    <script> chrome.contextMenus.create({title: "myid",contexts: ["myname"], onclick: getword,}); </script>
   </head>
 
   <body>
     <h1>Bookmarks 2.0</h1>
     <div id="container">
-      <form id = form1>
-          username: <input type = "text"><br>
-          password: <input type = "text"><br>
-          <button type = button>submit</button>
+      <form id="login_screen">
+          username: <input id="user" type="text"><br>
+          password: <input id="pass" type="password"><br>
+          <button id="submit_button" type=button>submit</button>
       </form>
+      <br/>
     </div>
+    <p id="invisible">sdf</p>
+    <script src="jquery-2.2.4.min.js"></script>
+    <script src="popup.js"></script>
   </body>
 </html>

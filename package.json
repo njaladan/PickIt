@@ -19,9 +19,13 @@
   },
   "homepage": "https://github.com/njaladan/PennApps18#readme",
   "dependencies": {
+    "aws-sdk": "^2.185.0",
+    "base64-img": "^1.0.3",
     "bcrypt": "^1.0.3",
+    "connect-mongo": "^2.0.1",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "mongoose": "^5.0.1",
     "pug": "^2.0.0-rc.4"
   },

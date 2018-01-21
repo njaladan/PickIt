@@ -13,23 +13,10 @@ const UserSchema = new mongoose.Schema({
 });
 
 //authenticate input against database
-UserSchema.statics.authenticate = function (username, password, callback) {
-  User.findOne({ username: username })
-    .exec(function (err, user) {
-      if (err) {
-        return callback(err);
-      } else if (!user) {
-        const err = new Error('User not found.');
-        err.status = 401;
-        return callback(err);
-      }
-      bcrypt.compare(password, user.password, function (err, result) {
-        if (result === true) {
-          return callback(null, user);
-        } else {
-          return callback();
-        }
-      });
+UserSchema.methods.comparePassword = function(candidatePassword, callback) {
+    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+        if (err) return callback(err);
+        callback(null, isMatch);
     });
 };
 
@@ -45,5 +32,5 @@ UserSchema.pre('save', function (next) {
   });
 });
 
-
-module.exports = mongoose.model('User', UserSchema);
+const User =  mongoose.model('User', UserSchema);
+module.exports = User;

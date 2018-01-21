@@ -20,7 +20,7 @@ AWS.config.update({
 //AWS End
 ///////////////////////////////////////////
 
-//Routes
+//API Endpoints
 //POST Request. Fields: username, password, passwordConf
 router.post("/newuser",(req,res) => {
   const username = req.body.username;
@@ -37,7 +37,9 @@ router.post("/newuser",(req,res) => {
       if (err) {
         res.send(err);
       } else {
-        res.send('User ' + username + ' has been added.'); 
+        //res.send('User ' + username + ' has been added.');
+        req.session.userId = user._id;
+        res.redirect('/');
       }
     });
   }
