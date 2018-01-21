@@ -4,6 +4,8 @@ PickIt is a full-fledged Chrome extension, API, and web app that lets you save a
 
 PickIt will be available on the Chrome Extension Store and online soon!
 
+For images of the final product, please see the `img` folder.
+
 ## Features
 
 PickIt features:
