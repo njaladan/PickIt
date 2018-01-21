@@ -3,6 +3,7 @@ const express = require('express');
 
 const User = require('../models/user');
 const Image = require('../models/image');
+const Tag = require('../models/tag');
 
 const router = express.Router();
 require('dotenv').load();
@@ -44,6 +45,14 @@ router.post("/newuser",(req,res) => {
   }
 });
 
+<<<<<<< HEAD
+//POST Request. Fields: awsKey, title, username, tags
+router.post("/newpic",(req,res) => {
+  const awsKey = req.body.awsKey;
+  const title = req.body.title;
+  const tags = req.body.tags;
+  const username = req.body.username;
+=======
 //GET Request. Fields: username, password
 router.get("/login", (req, res) => {
   const username = req.query.username;
@@ -86,31 +95,62 @@ router.post("/newpic",(req,res,next) => {
   let awsKey = req.body.awsKey;
   let title = req.body.title;
   let username = req.body.username;
+>>>>>>> 5090fdf030a6d38d80ac24bd2864dc5ae0e3ac65
   User.findOne({'username':username}).then(
     user => {
-      let ownerId = user._id;
-      console.log(ownerId);
-      let newPic = new Image({
+      const ownerId = user._id;
+      const newPic = new Image({
         'awsKey': awsKey,
         'title': title,
+        'tags': tags,
         'ownerId': ownerId
       });
       newPic.save();
+      newPic.tags.forEach(tag => {
+        Tag.findOne({'ownerId':ownerId, 'tag':tag}).then(tagObj => {
+          tagObj.picIDs.push(newPic._id);
+          tagObj.save();
+        });
+      });
       res.send("New picture, entitled '" + title + "' has been saved."); 
     },
     error => {console.log(error);}
   );
 });
 
+//POST Request. Fields: username, tag
+router.post("/newtag",(req,res) => {
+  const tag = req.body.tag;
+  const username = req.body.username;
+  User.findOne({'username':username}).then(user=> {
+      const userId = user._id;
+      console.log(user);
+      Tag.find({'tag':tag,'ownerId':userId}).then(tagList => {
+        if(tagList.length === 0){
+          const newTag = new Tag({
+            "tag": tag,
+            "pic_IDs": [],
+            "ownerId": userId
+          });
+          newTag.save();
+          res.send("New tag made");
+        }
+        else{
+          res.send("Tag exists");
+        }
+      });  
+    });
+    });
+
 //GET Request. Fields: username
 router.get("/allpics",(req,res) => {
-  let username = req.query.username;
+  const username = req.query.username;
   User.findOne({'username':username}).then(
     user => {
-      let userId = user._id;
+      const userId = user._id;
       Image.find({'ownerId':userId}).then(
         images => { 
-          let imageKeys = [];
+          const imageKeys = [];
           images.forEach(image => imageKeys.push(image.awsKey));
           res.send(imageKeys);
         }, error => {console.log(error)});
@@ -118,10 +158,36 @@ router.get("/allpics",(req,res) => {
     error => {console.log(error)});
 });
 
+//GET Request. Fields: username, tag
+router.get("/taggedpics",(req,res) => {
+  const tag = req.query.tag;
+  const username = req.query.username;
+  const taggedPicKeys = []
+  User.findOne({'username': username}).then( user => {
+    console.log(user._id,tag);
+  Tag.findOne({'tag':tag, 'ownerId':user._id}).then(tagObj => {
+    Image.find({_id: {$in: tagObj.picIDs}}).then(images => {
+      images.forEach(image => {
+        taggedPicKeys.push(image.awsKey);
+        console.log(taggedPicKeys);
+      });
+    }).then(()=>{
+    res.send(taggedPicKeys);
+  });
+  });
+});
+});
+
 //POST Request. Fields: uniqueNumber, username, imgUrl
-router.post("/s3upload",(req,res,next) => {
+router.post("/s3upload",(req,res) => {
+    function base64_encode(file) {
+      let bitmap = fs.readFileSync(file);
+      return new Buffer(bitmap).toString('base64');
+    }
     function dataUrlToBucket(url, name){
-        let filePath = base64Img.imgSync(url,'',name);
+        console.log("A");
+        console.log(url);
+        const filePath = base64Img.imgSync(url,'',name);
         fs.readFile(filePath, (err, data) =>{
             //Put object in bucket
             let s3 = new AWS.S3();
