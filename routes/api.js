@@ -45,6 +45,44 @@ router.post("/newuser",(req,res) => {
   }
 });
 
+//GET Request. Fields: username, password
+router.get("/login", (req, res) => {
+  const username = req.query.username;
+  const password = req.query.password;
+  User.findOne({'username': username}, (err, user) => {
+    if (err) throw err;
+    user.comparePassword(password, (err, correct) => {
+      if (err) throw err;
+      if (correct) {
+        req.session.userId = user._id;
+        res.redirect('/');
+      } else {
+        const error = new Error('Wrong username or password.');
+        error.status = 401;
+        res.send(error);
+      }
+    });
+  });
+});
+
+//GET Request. Fields: username, password. For chrome extension.
+router.get("/login/ext", (req, res) => {
+  const username = req.query.username;
+  const password = req.query.password;
+  User.findOne({'username': username}, (err, user) => {
+    if (err) throw err;
+    user.comparePassword(password, (err, correct) => {
+      if (err) throw err;
+      if (correct) {
+        res.send(user._id);
+      } else {
+        res.send(None);
+      }
+    });
+  }); 
+});
+
+
 //POST Request. Fields: awsKey, title, username, tags
 router.post("/newpic",(req,res) => {
   const awsKey = req.body.awsKey;
