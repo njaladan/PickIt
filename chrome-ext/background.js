@@ -14,9 +14,7 @@ function onClickHandler(info, tab) {
 
   chrome.storage.local.get('userId', function(items) {
     var userId = items.userId;
-    alert(userId);
     if (userId) {
-      alert(userId);
       $.post("http://localhost:3000/api/newpic", {
           'awsKey':imgsrc,
           'userId': userId,
